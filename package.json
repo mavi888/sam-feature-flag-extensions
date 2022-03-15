@@ -1,0 +1,12 @@
+{
+  "name": "sam-feature-flag-extensions",
+  "version": "1.0.0",
+  "description": "_Infrastructure as code framework used_: AWS SAM _AWS Services used_: AWS Lambda, AWS AppConfig",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

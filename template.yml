@@ -1,0 +1,64 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS AppConfig Feature Flags example
+
+###################################################################################################
+##  Template Parameters                                                                         ##
+###################################################################################################
+Parameters:
+  AppConfigApplication:
+    Type: String
+    Description: Id of AppConfig Application
+  AppConfigEnvironment:
+    Type: String
+    Description: Id of AppConfig Environment
+  AppConfigConfigurationProfile:
+    Type: String
+    Description: Id of AppConfig Configuration Profile
+  AppConfigARN: 
+    Type: String
+    Default: 'arn:aws:lambda:eu-west-1:434848589818:layer:AWS-AppConfig-Extension:62'
+
+###################################################################################################
+##  Template Resources                                                                          ##
+###################################################################################################
+Resources:
+  myFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs14.x
+      Handler: handler.myFunction
+      Layers:
+        - !Ref AppConfigARN
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          APPCONFIG_APPLICATION: !Ref AppConfigApplication
+          APPCONFIG_ENVIRONMENT: !Ref AppConfigEnvironment
+          APPCONFIG_CONFIGURATION: !Ref AppConfigConfigurationProfile          
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - appconfig:GetLatestConfiguration
+                - appconfig:StartConfigurationSession
+              Resource:
+                - !Sub 'arn:aws:appconfig:*:*:application/${AppConfigApplication}/environment/${AppConfigEnvironment}/configuration/${AppConfigConfigurationProfile}'
+      Events:
+        ApiGatewayEvent:
+          Type: Api
+          Properties:
+            Method: GET
+            Path: /test
+
+###################################################################################################
+##  Template outputs                                                                             ##
+###################################################################################################
+
+Outputs:
+  HttpApiUrl:
+    Description: URL of your API endpoint
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
